@@ -11,6 +11,8 @@ route.get(`/userinfo`, auth, authController.getUserInfo)
 
 route.patch(`/resetPassword`, authController.resetPassword)
 route.patch(`/updateProfile/:id`, auth, authController.profileUpdate)
+route.get(`/allUsers`, auth, authController.getAllUsers)
+
 
 
 
