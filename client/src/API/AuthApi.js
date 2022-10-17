@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import {toast} from 'react-toastify'
@@ -7,6 +9,7 @@ function useAuth(token) {
     const [isLogged, setIsLogged] = useState(false)
     const [isUser, setIsUser] = useState(false) 
     const [callback,setCallback] = useState(false);
+    const [allUsers, setAllUsers] = useState([]);
 
 
  
@@ -18,7 +21,8 @@ function useAuth(token) {
                     });
                     console.log('token =',token)
                 setUser(res.data.user)
-                setIsLogged(true)                               
+                setIsLogged(true)  
+                getAllUsersData()                             
                 if (res.data.user.role === "user") {
                     setIsUser(true)
                 }
@@ -27,28 +31,22 @@ function useAuth(token) {
         }
     },[token,callback])
 
+    const getAllUsersData = async () => {
+        const userList = await axios.get(`/api/v1/auth/allUsers`, {
+            headers: {Authorization: token}
+        })
+        setAllUsers(userList.data.users)
+    }
+
     
     return {
         userData: [user, setUser],
         isLogged: [isLogged, setIsLogged],
         isUser: [isUser, setIsUser],       
-        callback: [callback,setCallback]
+        callback: [callback,setCallback],
+        allUsers: [allUsers, setAllUsers]
   }
 }
 
 export default useAuth
 
-/*
-    mount = useEffect(() => {
-
-    },[]);
-
-    update = useEffect(() => {
-
-    },[params]);
-
-    unmount = useEffect(() => {
-    return () => {}
-    }, [])
-
-*/
