@@ -1,10 +1,42 @@
-import React, {useState} from 'react'
-import {Users} from './data'
+import React, {useState, useContext, useEffect} from 'react'
+import {GlobalContext} from '../../GlobalContext'
+import ReactPaginate from 'react-paginate';
 
-function Tab() {
-    
-    const [query, setQuery] = useState("");
-        
+
+
+function Tab(props) {
+  const data = useContext(GlobalContext);
+  const [allUsers] = data.authApi.allUsers;
+  const [query, setQuery] = useState("");
+  const [curItems, setCurItems] = useState(null);
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+
+  useEffect(() => {
+    const endOffset = itemOffset + props.itemsPerPage;
+    console.log(`Loading item from ${itemOffset} to ${endOffset}`);
+    setCurItems(allUsers.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(allUsers.length / props.itemsPerPage));
+  }, [itemOffset, props.itemsPerPage, allUsers]);
+
+  const handelItemClick = (e) => {
+    const newOffset = (e.selected * props.itemsPerPage) % allUsers.length;
+    setItemOffset(newOffset);
+  };
+
+  if (allUsers.length === 0) {
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12 text-center">
+            <h3 className="display-3 text-secondary">No Data Found</h3>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+      
 
   return (
     <div className='container'>
@@ -16,9 +48,7 @@ function Tab() {
                 onChange={(e) => setQuery(e.target.value.toLowerCase())}
               />             
             </div>
-        
-     
-            
+         
         <table class="table table-striped">
       <tbody>
         <tr>
@@ -26,10 +56,10 @@ function Tab() {
           <th>Username</th>
           <th>First_name</th>
           <th>Last_name</th>
-          <th>Gernder</th>
+          <th>Gender</th>
         </tr>
-        {Users.filter((asd) =>
-            asd.username.toLowerCase().includes(query)
+        {curItems.filter((a) =>
+            a.username.toLowerCase().includes(query)
             ).map((item) => (
           <tr key={item.user_id}>
             <td>{item.user_id}</td>
@@ -41,6 +71,26 @@ function Tab() {
         ))}
       </tbody>
     </table>
+    <div className='container'>
+        <div className="row">
+          <div className="col d-flex justify-content-center">
+          <ReactPaginate
+            pageCount={pageCount}
+            nextLabel={"next >"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            className={"pagination"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousLabel={"< prev"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            pageRangeDisplayed={"5"}
+            onPageChange={handelItemClick}
+          />
+          </div>
+        </div>
+    </div>
     </div>
   )
 }
