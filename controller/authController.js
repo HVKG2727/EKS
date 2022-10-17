@@ -2,6 +2,7 @@ const Auth = require('../model/authModel')
 const bcrypt = require('bcryptjs')
 const { createAccToken,createRefToken } = require('../util/token');
 const jwt = require('jsonwebtoken');
+const Users = require('../model/usersModel')
 
 
 
@@ -126,7 +127,19 @@ const authController = {
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }
-    }
+    },
+      getAllUsers: async (req, res)=> {
+        try{
+            const data = await Users.find();
+
+            return res.status(200).json({
+                users: data,
+                length: data.length,
+            })
+        }catch(err) {
+           return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
 module.exports = authController
