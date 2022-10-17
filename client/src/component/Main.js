@@ -36,7 +36,7 @@ function Main(props) {
               <Route path={`/register`} element={isLogged ? <Pnf/>: <Register/>} />
               <Route path={`/tab`} element={
             <ProtectedRoute  auth={isLogged} >
-                                                                  <Tab/>
+                                                                  <Tab itemsPerPage={30} />
                                                           </ProtectedRoute>
                                                       }  />
            
